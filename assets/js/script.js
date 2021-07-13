@@ -18,6 +18,7 @@ var createTask = function(taskText, taskDate, taskList) {
   $("#list-" + taskList).append(taskLi);
 };
 
+//Local Storage
 var loadTasks = function() {
   tasks = JSON.parse(localStorage.getItem("tasks"));
 
@@ -41,6 +42,7 @@ var loadTasks = function() {
   });
 };
 
+// The Save task Function to local storage
 var saveTasks = function() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
@@ -82,6 +84,7 @@ $("#task-form-modal .btn-primary").click(function() {
   }
 });
 
+
 // remove all tasks
 $("#remove-tasks").on("click", function() {
   for (var key in tasks) {
@@ -89,6 +92,49 @@ $("#remove-tasks").on("click", function() {
     $("#list-" + key).empty();
   }
   saveTasks();
+});
+
+$(".list-group").on("click", "p", function() {
+  var text = $(this)
+  .text()
+  .trim();
+
+  var textInput = $("<textarea>")
+  $(this).replaceWith(textInput);
+  textInput.trigger("focus")
+  .addClass("form-control")
+  .val(text);
+});
+
+$(".list-group").on("blur", "textarea", function() {
+  // get the textarea's current value/text
+var text = $(this)
+.val()
+.trim();
+
+// recreate p element
+var taskP = $("<p>")
+  .addClass("m-1")
+  .text(text);
+
+// replace textarea with p element
+$(this).replaceWith(taskP);
+
+// get the parent ul's id attribute
+var status = $(this)
+.closest(".list-group")
+.attr("id")
+.replace("list-", "");
+
+// get the task's position in the list of other li elements
+var index = $(this)
+.closest(".list-group-item")
+.index();
+
+tasks[status][index].text = text;
+saveTasks();
+
+
 });
 
 // load tasks for the first time
